@@ -1,125 +1,93 @@
-![logo_ironhack_blue 7](https://user-images.githubusercontent.com/23629340/40541063-a07a0a8a-601a-11e8-91b5-2f13e4e6b441.png)
-
 # Lab | SQL Queries - Join Two Tables
+use sakila;
 
-In this lab, you will be using the [Sakila](https://dev.mysql.com/doc/sakila/en/) database of movie rentals. If you need to get the data again, refer to the official [installation link](https://dev.mysql.com/doc/sakila/en/sakila-installation.html).
+# 1. Which actor has appeared in the most films? 
 
-The database is structured as follows:
-![DB schema](https://education-team-2020.s3-eu-west-1.amazonaws.com/data-analytics/database-sakila-schema.png)
+SELECT actor_id, COUNT(film_id) as films_appeared
+FROM film_actor
+GROUP BY actor_id
+ORDER BY films_appeared DESC;
 
-### Instructions
+# 2. Most active customer (the customer that has rented the most number of films)
 
-1. Which actor has appeared in the most films? 
+SELECT customer_id, COUNT(rental_id) as films_rented
+FROM rental
+GROUP BY customer_id
+ORDER BY films_rented DESC;
 
-```Hint:  group by actor_id```
+# 3. List number of films per `category`.
 
-Expected output:
-```shell
-GINA DEGENERES	42
-```
-2. Most active customer (the customer that has rented the most number of films)
+SELECT c.name, COUNT(f.film_id) as films_count
+FROM category c
+JOIN film_category fc 
+ON c.category_id = fc.category_id
+JOIN film f 
+ON fc.film_id = f.film_id
+GROUP BY c.category_id
+ORDER BY films_count DESC;
 
-Expected output:
-```shell
-ELEANOR HUNT	46
-```
-3. List number of films per `category`.
+# 4. Display the first and last names, as well as the address, of each staff member.
 
-Expected output:
-```shell
-Action	64
-Animation	66
-Children	60
-Classics	57
-Comedy	58
-Documentary	68
-Drama	62
-Family	69
-Foreign	73
-Games	61
-Horror	56
-Music	51
-New	63
-Sci-Fi	61
-Sports	74
-Travel	57
-```
-4. Display the first and last names, as well as the address, of each staff member.
+SELECT s.first_name, s.last_name, a.address
+FROM staff s
+JOIN address a ON s.address_id = a.address_id;
 
-Expected output:
-```shell
-Mike	Hillyer		23 Workhaven Lane
-Jon	Stephens	1411 Lillydale Drive
-```
-5. get films titles where the film language is either English or italian, 
+# 5. get films titles where the film language is either English or italian, 
 and whose titles starts with letter "M" , sorted by title descending.
 
-Expected output:
-71 rows including
-```shell
-title,name
-"MYSTIC TRUMAN",English
-"MUSSOLINI SPOILERS",English
-"MUSKETEERS WAIT",English
-"MUSIC BOONDOCK",English
-"MUSCLE BRIGHT",English
-"MURDER ANTITRUST",English
-"MUPPET MILE",English
-"MUMMY CREATURES",English
-"MULHOLLAND BEAST",English
-```
+SELECT title
+FROM film
+WHERE language_id IN (1, 7) AND title LIKE 'M%'
+ORDER BY title DESC;
+
 6. Display the total amount rung up by each staff member in August of 2005.
 
-Expected output:
-```shell
-Jon Stephens	12218.48
-Mike Hillyer	11853.65
-```
-7. List each film and the number of actors who are listed for that film.
+SELECT staff_id, SUM(amount) as total_amount
+FROM payment
+WHERE staff_id IS NOT NULL
+AND MONTH(payment_date) = 8
+AND YEAR(payment_date) = 2005
+GROUP BY staff_id;
 
-Expected output: Top 10 out of 997 rows
-```shell
-LAMBS CINCINATTI		15
-CHITTY LOCK			13
-CRAZY HOME			13
-RANDOM GO			13
-DRACULA CRYSTAL		13
-BOONDOCK BALLROOM	13
-MUMMY CREATURES		13
-HELLFIGHTERS SIERRA	12
-LONELY ELEPHANT		12
-ARABIA DOGMA		12
-```
-8. Using the tables `payment` and `customer` and the JOIN command, list the total paid by each customer. List the customers alphabetically by last name.
 
-Expected output:  Top 10 out of 599 rows
-```shell
-RAFAEL	ABNEY	97.79
-NATHANIEL	ADAM	133.72
-KATHLEEN	ADAMS	92.73
-DIANA	ALEXANDER	105.73
-GORDON	ALLARD	160.68
-SHIRLEY	ALLEN	126.69
-CHARLENE	ALVAREZ	114.73
-LISA	ANDERSON	106.76
-JOSE	ANDREW	96.75
-IDA	ANDREWS	76.77
-```
+# 7. List each film and the number of actors who are listed for that film.
 
-9. Write sql statement to check if you can find any actor who never particiapted in any film. 
+SELECT f.title, COUNT(fa.actor_id) as actors_count
+FROM film f
+JOIN film_actor fa ON f.film_id = fa.film_id
+GROUP BY f.film_id
+ORDER BY actors_count DESC;
 
-Expect output: no actor found. 
 
-10. get the addresses that has NO customers, and ends with the letter "e" 
-```shell
-address
-"47 MySakila Drive"
-"23 Workhaven Lane"
-"1411 Lillydale Drive"
-```
+# 8. Using the tables `payment` and `customer` and the JOIN command, list the total paid by each customer. List the customers alphabetically by last name.
+
+SELECT c.first_name, c.last_name, SUM(p.amount) as total_paid
+FROM customer c
+INNER JOIN payment p ON c.customer_id = p.customer_id
+GROUP BY c.customer_id
+ORDER BY c.last_name;
+
+# 9. Write sql statement to check if you can find any actor who never particiapted in any film. 
+
+SELECT a.*
+FROM actor a
+LEFT JOIN film_actor fa ON a.actor_id = fa.actor_id
+WHERE fa.actor_id IS NULL;
+
+# 10. get the addresses that has NO customers, and ends with the letter "e" 
+
+SELECT a.*
+FROM address a
+LEFT JOIN customer c ON a.address_id = c.address_id
+WHERE c.address_id IS NULL AND a.address LIKE '%e'
 
 - **Optional**: what is the most rented film?
 
-The answer is "Bucket Brotherhood" . <br>
-This query might require using more than one join statement. Give it a try.
+SELECT f.title, COUNT(r.rental_id) as rented_count
+FROM film f
+JOIN inventory i ON f.film_id = i.film_id
+JOIN rental r ON i.inventory_id = r.inventory_id
+GROUP BY f.film_id
+ORDER BY rented_count DESC
+LIMIT 1;
 
