@@ -81,7 +81,7 @@ FROM address a
 LEFT JOIN customer c ON a.address_id = c.address_id
 WHERE c.address_id IS NULL AND a.address LIKE '%e'
 
-- **Optional**: what is the most rented film?
+# **Optional**: what is the most rented film?
 
 SELECT f.title, COUNT(r.rental_id) as rented_count
 FROM film f
