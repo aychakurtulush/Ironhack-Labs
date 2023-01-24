@@ -40,7 +40,7 @@ FROM film
 WHERE language_id IN (1, 7) AND title LIKE 'M%'
 ORDER BY title DESC;
 
-6. Display the total amount rung up by each staff member in August of 2005.
+# 6. Display the total amount rung up by each staff member in August of 2005.
 
 SELECT staff_id, SUM(amount) as total_amount
 FROM payment
