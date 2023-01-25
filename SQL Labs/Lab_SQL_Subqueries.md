@@ -36,21 +36,20 @@ where address_id in (select address_id from address
 # Optional
 # 6. Which are films starred by the most prolific actor? Most prolific actor is defined as the actor that has acted in the most number of films. First you will have to find the most prolific actor and then use that actor_id to find the different films that he/she starred.
 
-Expected output:
-```shell
-42 rows including: 
-BED HIGHBALL
-CALENDAR GUNFIGHT
-CHAMBER ITALIAN
-CHAPLIN LICENSE
-CHARIOTS CONSPIRACY
-CLUELESS BUCKET
-COLDBLOODED DARLING
-CONEHEADS SMOOCHY
-DARKNESS WAR
-DEER VIRGINIAN
-```
-7. Films rented by most profitable customer. You can use the customer table and payment table to find the most profitable customer ie the customer that has made the largest sum of payments
+select title from film
+where film_id in (select film_id from film_actor
+					where actor_id = (select actor_id from film_actor
+									group by actor_id
+									order by count(actor_id) desc limit 1));
+
+# 7. Films rented by most profitable customer. You can use the customer table and payment table to find the most profitable customer ie the customer that has made the largest sum of payments
+
+select title from film
+where film_id in (select film_id from inventory
+					where inventory_id in (select inventory_id from rental
+											where rental_id in (select rental_id from payment
+																group by customer_id
+																order by sum(amount) desc limit 1)));
 
 Expected output:
 ```shell
@@ -66,7 +65,7 @@ PRINCESS GIANT
 PARIS WEEKEND
 RACER EGG
 ```
-8. Customers who spent more than the average payments(this refers to the average of all amount spent per each customer).
+# 8. Customers who spent more than the average payments(this refers to the average of all amount spent per each customer).
 
 Expected output:
 ```shell
