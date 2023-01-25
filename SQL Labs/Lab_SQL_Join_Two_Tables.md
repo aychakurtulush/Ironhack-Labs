@@ -3,10 +3,10 @@ use sakila;
 
 # 1. Which actor has appeared in the most films? 
 
-SELECT actor_id, COUNT(film_id) as films_appeared
-FROM film_actor
+SELECT actor_id, COUNT(film_id) as films_appeared FROM film_actor
 GROUP BY actor_id
-ORDER BY films_appeared DESC;
+ORDER BY films_appeared DESC
+LIMIT 1;
 
 # 2. Most active customer (the customer that has rented the most number of films)
 
