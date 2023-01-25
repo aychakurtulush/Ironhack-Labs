@@ -1,75 +1,40 @@
-![logo_ironhack_blue 7](https://user-images.githubusercontent.com/23629340/40541063-a07a0a8a-601a-11e8-91b5-2f13e4e6b441.png)
-
 # Lab | SQL Subqueries
+use sakila
+# 1. List all films whose length is longer than the average of all the films.
 
-In this lab, you will be using the [Sakila](https://dev.mysql.com/doc/sakila/en/) database of movie rentals. Create appropriate joins wherever necessary. 
+select title from film
+where length > (select avg(length) from film);
 
-### Instructions
+# 2. How many copies of the film _Hunchback Impossible_ exist in the inventory system?
 
-1. List all films whose length is longer than the average of all the films.
-
-Expected output:
-```shell
-489 rows including
-
-AFFAIR PREJUDICE
-AFRICAN EGG
-AGENT TRUMAN
-…
-WRATH MILE
-WRONG BEHAVIOR
-YOUNG LANGUAGE
-YOUTH KICK
-```
-2. How many copies of the film _Hunchback Impossible_ exist in the inventory system?
-
-Expected output:
-```shell
-6
-```
+select count(inventory_ID) from inventory
+where film_id = (select film_id from film
+				where title = 'Hunchback Impossible');
 
 3. Use subqueries to display all actors who appear in the film _Alone Trip_.
 
-Expected output:
-```shell
-ED CHASE
-KARL BERRY
-UMA WOOD
-WOODY JOLIE
-SPENCER DEPP
-CHRIS DEPP
-LAURENCE BULLOCK
-RENEE BALL
-```
-4. Sales have been lagging among young families, and you wish to target all family movies for a promotion. Identify all movies categorized as family films.
+select first_name, last_name from actor
+where actor_id in (select actor_id from film_actor
+					where film_id = (select film_id from film
+										where title = 'Alone Trip'));
 
-Expected output:
-```shell
-69 rows including 
-AFRICAN EGG
-APACHE DIVINE
-ATLANTIS CAUSE
-BAKED CLEOPATRA
-BANG KWAI
-BEDAZZLED MARRIED
-BILKO ANONYMOUS
-BLANKET BEVERLY
+# 4. Sales have been lagging among young families, and you wish to target all family movies for a promotion. Identify all movies categorized as family films.
 
-```
-5. Get name and email from customers from Canada using subqueries. Do the same with joins. Note that to create a join, you will have to identify the correct tables with their primary keys and foreign keys, that will help you get the relevant information.
+select title from film
+where film_id in (select film_id from film_category
+						where category_id = (select category_id from category
+											where NAME = 'Family'));
 
-Expected output:
-```shell
-DERRICK BOURQUE	DERRICK.BOURQUE@sakilacustomer.org
-DARRELL POWER	DARRELL.POWER@sakilacustomer.org
-LORETTA CARPENTER	LORETTA.CARPENTER@sakilacustomer.org
-CURTIS IRBY	CURTIS.IRBY@sakilacustomer.org
-TROY QUIGLEY	TROY.QUIGLEY@sakilacustomer.org
+# 5. Get name and email from customers from Canada using subqueries. Do the same with joins. Note that to create a join, you will have to identify the correct tables with their primary keys and foreign keys, that will help you get the relevant information.
 
-```
+select first_name, last_name, email from customer
+where address_id in (select address_id from address
+					where city_id in (select city_id from city
+									where country_id in (select country_id from country	
+														where country = 'Canada')));
 
 # Optional
-6. Which are films starred by the most prolific actor? Most prolific actor is defined as the actor that has acted in the most number of films. First you will have to find the most prolific actor and then use that actor_id to find the different films that he/she starred.
+# 6. Which are films starred by the most prolific actor? Most prolific actor is defined as the actor that has acted in the most number of films. First you will have to find the most prolific actor and then use that actor_id to find the different films that he/she starred.
 
 Expected output:
 ```shell
