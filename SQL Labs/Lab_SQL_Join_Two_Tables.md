@@ -33,8 +33,7 @@ SELECT s.first_name, s.last_name, a.address
 FROM staff s
 JOIN address a ON s.address_id = a.address_id;
 
-# 5. get films titles where the film language is either English or italian, 
-and whose titles starts with letter "M" , sorted by title descending.
+# 5. get films titles where the film language is either English or italian, and whose titles starts with letter "M" , sorted by title descending.
 
 SELECT title
 FROM film
