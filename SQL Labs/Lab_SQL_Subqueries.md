@@ -47,25 +47,13 @@ where film_id in (select film_id from film_actor
 select title from film
 where film_id in (select film_id from inventory
 					where inventory_id in (select inventory_id from rental
-											where rental_id in (select rental_id from payment
-																group by customer_id
+											where customer_id = (select customer_id from payment
+																GROUP by customer_id
 																order by sum(amount) desc limit 1)));
 
-Expected output:
-```shell
-44 rows including 
-DESTINY SATURDAY
-CYCLONE FAMILY
-SLUMS DUCK
-FIDELITY DEVIL
-SPLASH GUMP
-MISSION ZOOLANDER
-MULHOLLAND BEAST
-PRINCESS GIANT
-PARIS WEEKEND
-RACER EGG
-```
 # 8. Customers who spent more than the average payments(this refers to the average of all amount spent per each customer).
+
+
 
 Expected output:
 ```shell
