@@ -53,8 +53,6 @@ where film_id in (select film_id from inventory
 
 # 8. Customers who spent more than the average payments(this refers to the average of all amount spent per each customer).
 
-
-
 Expected output:
 ```shell
 285 rows including:
